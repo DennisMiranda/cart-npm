@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.tgz
+.astro/
+demo/dist/
+demo/.astro/
+coverage/
+.DS_Store

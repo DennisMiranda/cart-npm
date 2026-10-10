@@ -1,0 +1,124 @@
+---
+import { ArrowLeft, ArrowRight, X } from 'lucide-astro';
+import CartEmptyState from './CartEmptyState.astro';
+import CartItemRow from './CartItemRow.astro';
+import CartSummary from './CartSummary.astro';
+import Critical from './_critical.astro';
+import type { CartOptions, ShippingZone } from '../core/types.js';
+
+export interface Props {
+  title?: string;
+  checkoutTitle?: string;
+  shippingZones?: ShippingZone[];
+  zoneLabel?: string;
+  checkoutLabel?: string;
+  clearLabel?: string;
+  showClear?: boolean;
+  currency?: string;
+  locale?: string;
+  /** Opciones de `createCart()` serializadas al controlador (vea el MANUAL). */
+  options?: CartOptions;
+  class?: string;
+}
+
+const {
+  title = 'Tu Carrito',
+  checkoutTitle = 'Finalizar Pedido',
+  shippingZones = [],
+  zoneLabel = 'Seleccionar zona de entrega',
+  checkoutLabel = 'Finalizar Pedido',
+  clearLabel = 'Vaciar Carrito',
+  showClear = true,
+  currency = 'PEN',
+  locale = 'es-PE',
+  options,
+  class: className,
+} = Astro.props;
+
+// `shippingZones` alimenta tanto el UI como el core (las opciones explícitas tienen prioridad).
+const config = { shippingZones, ...options };
+---
+
+<div
+  class="ac-backdrop ac-cart"
+  data-cart-backdrop
+  data-open="false"
+  data-cart-action="close"
+  aria-hidden="true"
+></div>
+
+<aside
+  class:list={['ac-drawer', 'ac-cart', className]}
+  data-cart-drawer
+  data-open="false"
+  data-view="cart"
+  data-empty="true"
+  data-cart-config={JSON.stringify(config)}
+  role="dialog"
+  aria-modal="true"
+  aria-label={title}
+  aria-hidden="true"
+>
+  <header class="ac-drawer__header">
+    <button type="button" class="ac-icon-btn" data-cart-action="back" aria-label="Volver">
+      <ArrowLeft size={18} />
+    </button>
+    <h2 class="ac-drawer__title" data-title-cart>{title}</h2>
+    <h2 class="ac-drawer__title" data-title-checkout>{checkoutTitle}</h2>
+    <span class="ac-drawer__count" data-cart-count>0</span>
+    <button
+      type="button"
+      class="ac-icon-btn"
+      style="margin-left: auto"
+      data-cart-action="close"
+      aria-label="Cerrar carrito"
+    >
+      <X size={18} />
+    </button>
+  </header>
+
+  <div class="ac-drawer__body">
+    {
+      Astro.slots.has('empty') ? (
+        <slot name="empty" />
+      ) : (
+        <CartEmptyState />
+      )
+    }
+
+    <div class="ac-items" data-cart-items>
+      <template data-cart-item-template>
+        <CartItemRow currency={currency} locale={locale} />
+      </template>
+    </div>
+
+    <div data-cart-checkout>
+      <slot name="checkout" />
+    </div>
+  </div>
+
+  <footer class="ac-drawer__footer" data-cart-footer>
+    {
+      Astro.slots.has('footer-actions') ? (
+        <slot name="footer-actions" />
+      ) : (
+        <CartSummary
+          shippingZones={shippingZones}
+          zoneLabel={zoneLabel}
+          checkoutLabel={checkoutLabel}
+          clearLabel={clearLabel}
+          showClear={showClear}
+          currency={currency}
+          locale={locale}
+        />
+      )
+    }
+  </footer>
+</aside>
+
+<Critical />
+
+<script>
+  import { initCart } from '@tinycode/astro-cart/client';
+  initCart();
+</script>

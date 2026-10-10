@@ -1,0 +1,119 @@
+---
+import { Minus, Plus, X } from 'lucide-astro';
+import Critical from './_critical.astro';
+import { formatCurrency } from '../core/format.js';
+import type { Product } from '../core/types.js';
+
+export interface Props {
+  product: Product;
+  addLabel?: string;
+  optionsLabel?: string;
+  currency?: string;
+  locale?: string;
+  class?: string;
+}
+
+const {
+  product,
+  addLabel = 'Agregar',
+  optionsLabel = 'Opciones disponibles',
+  currency = 'PEN',
+  locale = 'es-PE',
+  class: className,
+} = Astro.props;
+
+const money = (n: number) => formatCurrency(n, { currency, locale });
+const variants = product.variants ?? [];
+const hasVariants = variants.length > 0;
+const defaultIdx = Math.max(
+  0,
+  variants.findIndex((v) => v.isDefault),
+);
+const unitPrice = hasVariants ? Number(variants[defaultIdx]?.price ?? product.price) : Number(product.price) || 0;
+---
+
+<div
+  class:list={['ac-vs', 'ac-cart', className]}
+  data-cart-selector
+  data-open="false"
+  data-product={JSON.stringify(product)}
+  data-variant-index={defaultIdx}
+  data-qty="1"
+  data-add-label={addLabel}
+  role="dialog"
+  aria-modal="true"
+  aria-label={product.name}
+>
+  <div class="ac-vs__backdrop" data-cart-action="variant-close"></div>
+
+  <div class="ac-vs__sheet">
+    <button type="button" class="ac-icon-btn ac-vs__close" data-cart-action="variant-close" aria-label="Cerrar">
+      <X size={18} />
+    </button>
+
+    {
+      product.imageUrl && (
+        <div class="ac-vs__media">
+          <img src={product.imageUrl} alt={product.name} loading="lazy" />
+        </div>
+      )
+    }
+
+    <h3 class="ac-vs__title">{product.name}</h3>
+    {product.description && <p class="ac-vs__desc">{product.description}</p>}
+
+    {
+      hasVariants && (
+        <>
+          <p class="ac-vs__label">{optionsLabel}</p>
+          <div class="ac-vs__variants" role="radiogroup" aria-label={optionsLabel}>
+            {variants.map((variant, index) => (
+              <button
+                type="button"
+                class="ac-vs__variant"
+                role="radio"
+                aria-checked={index === defaultIdx}
+                data-cart-action="variant-select"
+                data-variant-index={index}
+              >
+                <span>{variant.label}</span>
+                {variant.badge && <span class="ac-vs__variant-badge">{variant.badge}</span>}
+                <span class="ac-vs__variant-price">{money(Number(variant.price))}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )
+    }
+
+    <div class="ac-stepper">
+      <button
+        type="button"
+        class="ac-stepper__btn"
+        data-cart-action="variant-dec"
+        aria-label="Disminuir cantidad"
+        disabled
+      >
+        <Minus size={14} />
+      </button>
+      <span class="ac-stepper__value" data-vs-qty>1</span>
+      <button type="button" class="ac-stepper__btn" data-cart-action="variant-inc" aria-label="Aumentar cantidad">
+        <Plus size={14} />
+      </button>
+    </div>
+
+    <div class="ac-vs__bar">
+      <span class="ac-vs__total" data-vs-total>{`${addLabel} · ${money(unitPrice * 1)}`}</span>
+      <button type="button" class="ac-btn ac-btn--primary" data-cart-action="variant-add">
+        {addLabel}
+      </button>
+    </div>
+  </div>
+</div>
+
+<Critical />
+
+<script>
+  import { initCart } from '@tinycode/astro-cart/client';
+  initCart();
+</script>

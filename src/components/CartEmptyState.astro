@@ -1,0 +1,26 @@
+---
+import { ShoppingBag } from 'lucide-astro';
+
+export interface Props {
+  title?: string;
+  text?: string;
+  ctaLabel?: string;
+  class?: string;
+}
+
+const {
+  title = '¡Tu carrito está vacío!',
+  text = 'Parece que aún no has agregado nada delicioso a tu pedido.',
+  ctaLabel = 'Explorar Menú',
+  class: className,
+} = Astro.props;
+---
+
+<div class:list={['ac-empty', className]} data-cart-empty>
+  <span class="ac-empty__icon"><ShoppingBag size={36} /></span>
+  <h3 class="ac-empty__title">{title}</h3>
+  <p class="ac-empty__text">{text}</p>
+  <button type="button" class="ac-btn ac-btn--secondary" data-cart-action="close" style="margin-top: 1rem">
+    {ctaLabel}
+  </button>
+</div>

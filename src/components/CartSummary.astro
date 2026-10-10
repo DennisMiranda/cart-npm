@@ -1,0 +1,96 @@
+---
+import { ArrowRight, MapPin } from 'lucide-astro';
+import { formatCurrency } from '../core/format.js';
+import type { ShippingZone } from '../core/types.js';
+
+export interface Props {
+  shippingZones?: ShippingZone[];
+  zoneLabel?: string;
+  checkoutLabel?: string;
+  clearLabel?: string;
+  showClear?: boolean;
+  currency?: string;
+  locale?: string;
+  class?: string;
+}
+
+const {
+  shippingZones = [],
+  zoneLabel = 'Seleccionar zona de entrega',
+  checkoutLabel = 'Finalizar Pedido',
+  clearLabel = 'Vaciar Carrito',
+  showClear = true,
+  currency = 'PEN',
+  locale = 'es-PE',
+  class: className,
+} = Astro.props;
+
+const money = (n: number) => formatCurrency(n, { currency, locale });
+---
+
+<div class:list={['ac-summary-wrap', className]} data-cart-summary>
+  {
+    shippingZones.length > 0 && (
+      <div class="ac-zones" data-cart-zones>
+        <button type="button" class="ac-zones__toggle" data-cart-action="toggle-zones" aria-expanded="false">
+          <MapPin size={16} />
+          <span data-zone-label data-default-label={zoneLabel}>{zoneLabel}</span>
+          <ArrowRight class="ac-zones__chevron" size={16} />
+        </button>
+        <ul class="ac-zones__list" data-zone-list hidden>
+          {shippingZones.map((zone, index) => (
+            <li>
+              <button
+                type="button"
+                class="ac-zones__option"
+                data-cart-action="select-zone"
+                data-zone-index={index}
+                aria-current="false"
+              >
+                <span>{zone.name}</span>
+                <span>{money(zone.fee)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <dl class="ac-summary">
+    <div class="ac-summary__row" data-row="subtotal">
+      <dt>Subtotal</dt>
+      <dd data-cart-subtotal>—</dd>
+    </div>
+    <div class="ac-summary__row" data-row="discount" hidden>
+      <dt>Ahorro</dt>
+      <dd data-cart-discount>—</dd>
+    </div>
+    <div class="ac-summary__row" data-row="shipping" hidden>
+      <dt>Delivery</dt>
+      <dd data-cart-shipping>—</dd>
+    </div>
+    <div class="ac-summary__row" data-row="tax" hidden>
+      <dt>Impuestos</dt>
+      <dd data-cart-tax>—</dd>
+    </div>
+    <div class="ac-summary__row" data-row="total">
+      <dt>Total</dt>
+      <dd data-cart-total aria-live="polite">—</dd>
+    </div>
+  </dl>
+
+  <div class="ac-summary__actions">
+    <button type="button" class="ac-btn ac-btn--secondary" data-cart-action="checkout">
+      {checkoutLabel}
+      <ArrowRight size={16} />
+    </button>
+    {
+      showClear && (
+        <button type="button" class="ac-btn ac-btn--ghost" data-cart-action="clear">
+          {clearLabel}
+        </button>
+      )
+    }
+  </div>
+</div>

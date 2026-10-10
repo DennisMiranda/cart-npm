@@ -1,0 +1,74 @@
+---
+import { Minus, Plus, Trash2 } from 'lucide-astro';
+import { formatCurrency } from '../core/format.js';
+import type { CartItem } from '../core/types.js';
+
+export interface Props {
+  /** Si se omite, se renderiza una fila vacía (plantilla para el controlador). */
+  item?: CartItem;
+  currency?: string;
+  locale?: string;
+  showThumbnail?: boolean;
+  class?: string;
+}
+
+const {
+  item,
+  currency = 'PEN',
+  locale = 'es-PE',
+  showThumbnail = true,
+  class: className,
+} = Astro.props;
+
+const money = (n: number) => formatCurrency(n, { currency, locale });
+const id = item?.id ?? '';
+---
+
+<div class:list={['ac-item', className]} data-cart-item data-id={id}>
+  <div class="ac-item__media" data-item-media hidden={!showThumbnail || !item?.imageUrl}>
+    <img data-field="image" src={item?.imageUrl ?? ''} alt="" loading="lazy" />
+  </div>
+
+  <div class="ac-item__info">
+    <p class="ac-item__name" data-field="name">{item?.name ?? ''}</p>
+    <p class="ac-item__variant" data-field="variant" hidden={!item?.variant}>{item?.variant?.label ?? ''}</p>
+    <p class="ac-item__price" data-field="unitPrice">{item ? `${money(item.unitPrice)} c/u` : ''}</p>
+  </div>
+
+  <div class="ac-stepper">
+    <button
+      type="button"
+      class="ac-stepper__btn"
+      data-cart-action="dec"
+      data-id={id}
+      aria-label="Disminuir cantidad"
+      title="Disminuir cantidad"
+      disabled={(item?.quantity ?? 1) <= 1}
+    >
+      <Minus size={14} />
+    </button>
+    <span class="ac-stepper__value" data-field="quantity">{item?.quantity ?? 1}</span>
+    <button
+      type="button"
+      class="ac-stepper__btn"
+      data-cart-action="inc"
+      data-id={id}
+      aria-label="Aumentar cantidad"
+      title="Aumentar cantidad"
+    >
+      <Plus size={14} />
+    </button>
+  </div>
+
+  <span class="ac-item__total" data-field="lineTotal">{item ? money(item.lineTotal) : ''}</span>
+
+  <button
+    type="button"
+    class="ac-icon-btn ac-item__remove"
+    data-cart-action="remove"
+    data-id={id}
+    aria-label="Eliminar producto"
+  >
+    <Trash2 size={16} />
+  </button>
+</div>

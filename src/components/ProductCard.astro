@@ -1,0 +1,82 @@
+---
+import { Plus, Star } from 'lucide-astro';
+import VariantSelector from './VariantSelector.astro';
+import { formatCurrency } from '../core/format.js';
+import type { Product } from '../core/types.js';
+
+export interface Props {
+  product: Product;
+  currency?: string;
+  locale?: string;
+  showThumbnail?: boolean;
+  addLabel?: string;
+  class?: string;
+}
+
+const {
+  product,
+  currency = 'PEN',
+  locale = 'es-PE',
+  showThumbnail = true,
+  addLabel = 'Agregar',
+  class: className,
+} = Astro.props;
+
+const money = (n: number) => formatCurrency(n, { currency, locale });
+const variants = product.variants ?? [];
+const hasVariants = variants.length > 0;
+
+// Precio inicial: mínimo de los priceRanges con price > 0, o el precio base (§3.2)
+const variantPrices = variants.map((v) => Number(v.price)).filter((p) => Number.isFinite(p) && p > 0);
+const startingPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : Number(product.price) || 0;
+const compareAt = Number(product.compareAtPrice) || 0;
+---
+
+<article class:list={['ac-card', 'ac-cart', className]} data-cart-product data-id={product.id} data-product={JSON.stringify(product)}>
+  {
+    product.isRecommended && (
+      <span class="ac-card__star" title="Recomendado">
+        <Star size={14} />
+      </span>
+    )
+  }
+
+  {
+    showThumbnail && product.imageUrl && (
+      <div class="ac-card__media">
+        <img src={product.imageUrl} alt={product.name} loading="lazy" />
+        <span class="ac-card__price-badge">{money(startingPrice)}</span>
+      </div>
+    )
+  }
+
+  <div>
+    <h3 class="ac-card__name">{product.name}</h3>
+    {product.description && <p class="ac-card__desc">{product.description}</p>}
+  </div>
+
+  <div class="ac-card__footer">
+    <span class="ac-card__price">
+      {hasVariants && <span class="ac-card__price--from">Desde </span>}
+      {money(startingPrice)}
+      {compareAt > startingPrice && <span class="ac-card__compare">{money(compareAt)}</span>}
+    </span>
+
+    <button
+      type="button"
+      class="ac-card__add"
+      data-cart-action={hasVariants ? 'variant-open' : 'add'}
+      aria-label={hasVariants ? `Elegir opciones de ${product.name}` : `Agregar ${product.name} al carrito`}
+      title={hasVariants ? 'Elegir cantidades' : addLabel}
+    >
+      <Plus size={18} />
+    </button>
+  </div>
+
+  {hasVariants && <VariantSelector product={product} currency={currency} locale={locale} addLabel={addLabel} />}
+</article>
+
+<script>
+  import { initCart } from '@tinycode/astro-cart/client';
+  initCart();
+</script>

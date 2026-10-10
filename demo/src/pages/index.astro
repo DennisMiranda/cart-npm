@@ -1,0 +1,224 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+  CartDrawer,
+  CartTrigger,
+  ProductCard,
+  CheckoutSlot,
+} from '@tinycode/astro-cart/components';
+import type { Product } from '@tinycode/astro-cart';
+
+const productos: Product[] = [
+  {
+    id: 1,
+    name: 'Pollo a la brasa',
+    description: 'Pieza clásica con papas y ensalada.',
+    price: 35,
+    imageUrl: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=640&q=60',
+    isRecommended: true,
+  },
+  {
+    id: 2,
+    name: 'Arroz chaufa',
+    description: 'Wok tradicional con huevo y cebollín.',
+    price: 22,
+    compareAtPrice: 28,
+    imageUrl: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=640&q=60',
+  },
+  {
+    id: 3,
+    name: 'Combo familiar',
+    description: 'Elige tu presentación.',
+    price: 20,
+    imageUrl: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=640&q=60',
+    variants: [
+      { id: 'v1', label: '1 und', price: 20 },
+      { id: 'v2', label: '3 unds', price: 55, badge: 'Ahorra S/ 5', isDefault: true },
+      { id: 'v3', label: '5 unds', price: 88, badge: '+1 de regalo' },
+    ],
+  },
+  {
+    id: 4,
+    name: 'Chicha morada 1L',
+    price: 12,
+    description: 'Bebida artesanal sin imagen.',
+  },
+];
+
+const zonas = [
+  { name: 'Centro', fee: 8 },
+  { name: 'Sur', fee: 12 },
+  { name: 'Norte', fee: 15 },
+];
+---
+
+<Layout title="Demo · @tinycode/astro-cart">
+  <main class="page">
+    <h1>Menú demo</h1>
+    <p>Agrega productos (con y sin variantes) y revisa el drawer + trigger del carrito.</p>
+
+    <div class="grid">
+      {productos.map((producto) => <ProductCard product={producto} />)}
+    </div>
+  </main>
+
+  <CartDrawer
+    shippingZones={zonas}
+    options={{ storage: 'local', storageKey: 'demo-cart', maxQuantityPerItem: 10, taxRate: 0 }}
+  >
+    <CheckoutSlot slot="checkout" title="Confirma tu pedido">
+      <p>Elige cómo pagar:</p>
+      <div class="pay-methods" role="group" aria-label="Método de pago">
+        <button type="button" class="pay-card" data-payment-method="Efectivo" aria-pressed="false">
+          <span class="pay-card__icon" aria-hidden="true">💵</span>
+          <span class="pay-card__name">Efectivo</span>
+          <span class="pay-card__hint">Paga al recibir tu pedido</span>
+        </button>
+        <button type="button" class="pay-card" data-payment-method="Yape" aria-pressed="false">
+          <span class="pay-card__icon" aria-hidden="true">💜</span>
+          <span class="pay-card__name">Yape</span>
+          <span class="pay-card__hint">QR o número de celular</span>
+        </button>
+      </div>
+      <p class="pay-total"><strong>Total a pagar:</strong> <span data-cart-total>—</span></p>
+      <a
+        class="ac-btn ac-btn--primary pay-whatsapp"
+        data-whatsapp
+        aria-disabled="true"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Enviar pedido por WhatsApp
+      </a>
+      <button type="button" class="ac-btn" data-cart-action="back">Volver al carrito</button>
+    </CheckoutSlot>
+  </CartDrawer>
+
+  <CartTrigger />
+</Layout>
+
+<script>
+  import { cart, formatCurrency } from '@tinycode/astro-cart';
+  import { initCart } from '@tinycode/astro-cart/client';
+
+  initCart();
+
+  /** Reemplaza por tu número de WhatsApp (código de país + número, sin espacios ni '+'). */
+  const WHATSAPP_NUMBER = '51999999999';
+
+  let paymentMethod: string | null = null;
+
+  const paymentButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-payment-method]')];
+  const whatsapp = document.querySelector<HTMLAnchorElement>('[data-whatsapp]');
+
+  function money(n: number): string {
+    const { locale, currency } = cart.getOptions();
+    return formatCurrency(n, { locale, currency });
+  }
+
+  function buildWhatsAppUrl(): string {
+    const totals = cart.getTotals();
+    const zone = cart.getState().shippingZone;
+    const lines = cart
+      .getItems()
+      .map((item) => `• ${item.quantity} × ${item.name}: ${money(item.lineTotal)}`);
+    const message = [
+      '🛒 *Nuevo pedido — Menú demo*',
+      '',
+      ...lines,
+      '',
+      `Subtotal: ${money(totals.subtotal)}`,
+      zone ? `Delivery (${zone.name}): ${money(totals.shipping)}` : null,
+      `Total: ${money(totals.total)}`,
+      `Pago: ${paymentMethod ?? '—'}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  }
+
+  function syncWhatsapp(): void {
+    if (!whatsapp) return;
+    whatsapp.href = buildWhatsAppUrl();
+    whatsapp.setAttribute('aria-disabled', String(!paymentMethod));
+  }
+
+  paymentButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      paymentMethod = btn.dataset.paymentMethod ?? null;
+      paymentButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      syncWhatsapp();
+    });
+  });
+
+  whatsapp?.addEventListener('click', (event) => {
+    if (!paymentMethod) event.preventDefault();
+  });
+
+  cart.subscribe(() => syncWhatsapp());
+  syncWhatsapp();
+
+  // Ejemplo de integración: escuchar eventos del carrito.
+  document.addEventListener('cart:item:add', (event) => {
+    console.log('agregado:', (event as CustomEvent).detail.item.name);
+  });
+</script>
+
+<style>
+  .pay-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 0.75rem 0 1rem;
+  }
+
+  .pay-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.9rem 0.75rem;
+    border: 1px solid var(--cart-border, #e7e5e4);
+    border-radius: 12px;
+    background: var(--cart-surface, #fff);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pay-card[aria-pressed='true'] {
+    border-color: var(--cart-primary);
+    box-shadow: 0 0 0 1px var(--cart-primary);
+  }
+
+  .pay-card__icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .pay-card__name {
+    font-weight: 600;
+  }
+
+  .pay-card__hint {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .pay-total {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .pay-whatsapp {
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .pay-whatsapp[aria-disabled='true'] {
+    opacity: 0.55;
+  }
+</style>

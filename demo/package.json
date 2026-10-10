@@ -1,0 +1,15 @@
+{
+  "name": "astro-cart-demo",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@tinycode/astro-cart": "file:..",
+    "astro": "^7.3.8"
+  }
+}

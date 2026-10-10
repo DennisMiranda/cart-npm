@@ -1,0 +1,13 @@
+---
+export interface Props {
+  title?: string;
+  class?: string;
+}
+
+const { title = 'Datos de entrega', class: className } = Astro.props;
+---
+
+<div class:list={['ac-checkout', 'ac-cart', className]}>
+  <h3 class="ac-vs__title" style="margin-bottom: 1rem">{title}</h3>
+  <slot />
+</div>

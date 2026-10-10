@@ -1,0 +1,26 @@
+---
+import { ArrowRight } from 'lucide-astro';
+
+export interface Props {
+  label?: string;
+  class?: string;
+}
+
+const { label = 'Ver Carrito', class: className } = Astro.props;
+---
+
+<div class:list={['ac-trigger', 'ac-cart', className]} data-cart-trigger hidden>
+  <button type="button" class="ac-trigger__btn" data-cart-action="open">
+    <span class="ac-trigger__badge" data-cart-count>0</span>
+    <span class="ac-trigger__text">
+      <span class="ac-trigger__label">{label}</span>
+      <span class="ac-trigger__total" data-cart-trigger-total>—</span>
+    </span>
+    <ArrowRight class="ac-trigger__arrow" size={18} />
+  </button>
+</div>
+
+<script>
+  import { initCart } from '@tinycode/astro-cart/client';
+  initCart();
+</script>
