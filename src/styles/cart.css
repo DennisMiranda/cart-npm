@@ -1,8 +1,8 @@
 /* ============================================================
-   @tinycode/astro-cart — estilos globales
+   @dennismiranda/astro-cart — estilos globales
    Importar en el Layout de Astro:
 
-     import '@tinycode/astro-cart/styles.css';
+     import '@dennismiranda/astro-cart/styles.css';
 
    Todas las variables se pueden sobreescribir en :root o en
    cualquier scope (p. ej. una sección oscura del sitio).

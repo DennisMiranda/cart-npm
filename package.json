@@ -1,5 +1,5 @@
 {
-  "name": "@tinycode/astro-cart",
+  "name": "@dennismiranda/astro-cart",
   "version": "0.1.0",
   "description": "Carrito de ecommerce funcional para Astro: drawer lateral, trigger flotante, variantes, persistencia y theming por CSS variables.",
   "type": "module",
@@ -18,7 +18,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tinycode/astro-cart.git"
+    "url": "git+https://github.com/DennisMiranda/cart-npm.git"
+  },
+  "homepage": "https://github.com/DennisMiranda/cart-npm#readme",
+  "bugs": {
+    "url": "https://github.com/DennisMiranda/cart-npm/issues"
   },
   "files": [
     "dist",

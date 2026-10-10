@@ -8,7 +8,7 @@ importers:
 
   .:
     dependencies:
-      '@tinycode/astro-cart':
+      '@dennismiranda/astro-cart':
         specifier: file:..
         version: file:..(astro@7.3.8(yaml@2.9.1))
       astro:
@@ -179,6 +179,12 @@ packages:
   '@clack/prompts@1.8.1':
     resolution: {integrity: sha512-dlT1m5e/0yUL0kRNcQn7yGLVThkgbB0Ga/1AmfDDC/8ik6AIiSf2QLQO2zPYvefsHP0aFgxO93cVLCCfDp7kzQ==}
     engines: {node: '>= 20.12.0'}
+
+  '@dennismiranda/astro-cart@file:..':
+    resolution: {directory: .., type: directory}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      astro: '>=4.0.0'
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -505,12 +511,6 @@ packages:
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
-
-  '@tinycode/astro-cart@file:..':
-    resolution: {directory: .., type: directory}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      astro: '>=4.0.0'
 
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
@@ -1383,6 +1383,11 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
+  '@dennismiranda/astro-cart@file:..(astro@7.3.8(yaml@2.9.1))':
+    dependencies:
+      astro: 7.3.8(yaml@2.9.1)
+      lucide-astro: 0.556.0(astro@7.3.8(yaml@2.9.1))
+
   '@emnapi/core@1.11.1':
     dependencies:
       '@emnapi/wasi-threads': 1.2.2
@@ -1628,11 +1633,6 @@ snapshots:
       '@types/hast': 3.0.5
 
   '@shikijs/vscode-textmate@10.0.2': {}
-
-  '@tinycode/astro-cart@file:..(astro@7.3.8(yaml@2.9.1))':
-    dependencies:
-      astro: 7.3.8(yaml@2.9.1)
-      lucide-astro: 0.556.0(astro@7.3.8(yaml@2.9.1))
 
   '@tybys/wasm-util@0.10.4':
     dependencies:

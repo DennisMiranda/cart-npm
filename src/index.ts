@@ -20,7 +20,7 @@ export function getCart(options?: CartOptions): Cart {
  * Lazy: no toca `window`/`localStorage` hasta que se usa.
  *
  * ```ts
- * import { cart } from '@tinycode/astro-cart';
+ * import { cart } from '@dennismiranda/astro-cart';
  * cart.addItem({ id: 1, name: 'Pollo a la brasa', price: 35 });
  * ```
  */

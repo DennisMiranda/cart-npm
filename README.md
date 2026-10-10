@@ -1,4 +1,4 @@
-# @tinycode/astro-cart
+# @dennismiranda/astro-cart
 
 Carrito de ecommerce funcional para **Astro**: drawer lateral, trigger flotante con contador, selector de variantes, zonas de entrega, persistencia en `localStorage` y theming completo por **CSS variables**.
 
@@ -9,15 +9,15 @@ Carrito de ecommerce funcional para **Astro**: drawer lateral, trigger flotante 
 ## Instalación
 
 ```bash
-npm install @tinycode/astro-cart
+npm install @dennismiranda/astro-cart
 ```
 
 ## Uso mínimo
 
 ```astro
 ---
-import '@tinycode/astro-cart/styles.css';  // en tu Layout
-import { CartDrawer, CartTrigger, ProductCard } from '@tinycode/astro-cart/components';
+import '@dennismiranda/astro-cart/styles.css';  // en tu Layout
+import { CartDrawer, CartTrigger, ProductCard } from '@dennismiranda/astro-cart/components';
 ---
 
 <ProductCard product={{ id: 1, name: 'Pollo a la brasa', price: 35 }} />
@@ -28,7 +28,7 @@ import { CartDrawer, CartTrigger, ProductCard } from '@tinycode/astro-cart/compo
 ## Colores
 
 ```css
-@import '@tinycode/astro-cart/styles.css';
+@import '@dennismiranda/astro-cart/styles.css';
 
 :root {
   --cart-primary: #7c2d12;

@@ -1,4 +1,4 @@
-# MANUAL — `@tinycode/astro-cart`
+# MANUAL — `@dennismiranda/astro-cart`
 
 Carrito de ecommerce funcional para **Astro**: drawer lateral, botón flotante, selector de variantes, zonas de entrega, persistencia y theming por CSS variables.
 
@@ -11,7 +11,7 @@ Carrito de ecommerce funcional para **Astro**: drawer lateral, botón flotante, 
 ## 1. Instalación
 
 ```bash
-npm install @tinycode/astro-cart
+npm install @dennismiranda/astro-cart
 ```
 
 `lucide-astro` (iconos) se instala como dependencia del paquete; `astro` es peer (≥ 4).
@@ -27,7 +27,7 @@ npm install @tinycode/astro-cart
 <html>
   <head>
     <style is:global>
-      @import '@tinycode/astro-cart/styles.css';
+      @import '@dennismiranda/astro-cart/styles.css';
 
       /* Opcional: personaliza los colores (vea §7) */
       :root {
@@ -45,7 +45,7 @@ npm install @tinycode/astro-cart
 ```astro
 ---
 // src/pages/index.astro
-import { CartDrawer, CartTrigger, ProductCard } from '@tinycode/astro-cart/components';
+import { CartDrawer, CartTrigger, ProductCard } from '@dennismiranda/astro-cart/components';
 
 const productos = [
   { id: 1, name: 'Pollo a la brasa', price: 35, imageUrl: '/pollo.jpg' },
@@ -77,7 +77,7 @@ Listo: `+` agrega productos (los que tienen `variants` abren el selector), el dr
 
 | Componente | Importación | Qué hace |
 |---|---|---|
-| `CartDrawer` | `@tinycode/astro-cart/components` | Drawer: header + contador + lista + resumen + acciones. Incluye backdrop |
+| `CartDrawer` | `@dennismiranda/astro-cart/components` | Drawer: header + contador + lista + resumen + acciones. Incluye backdrop |
 | `CartTrigger` | ídem | Botón flotante con badge y total (oculto si el carrito está vacío) |
 | `ProductCard` | ídem | Card de producto: sin variantes agrega directo; con variantes abre el selector |
 | `VariantSelector` | ídem | Modal (desktop) / bottom-sheet (móvil) con variantes + stepper |
@@ -86,7 +86,7 @@ Listo: `+` agrega productos (los que tienen `variants` abren el selector), el dr
 | `CartEmptyState` | ídem | Estado vacío con CTA (ya incluido en el drawer) |
 | `CheckoutSlot` | ídem | Wrapper para tu formulario de checkout |
 
-También puedes importar uno a uno: `import CartDrawer from '@tinycode/astro-cart/components/CartDrawer'`.
+También puedes importar uno a uno: `import CartDrawer from '@dennismiranda/astro-cart/components/CartDrawer'`.
 
 ### 3.1 `CartDrawer`
 
@@ -134,7 +134,7 @@ Props: `product`, `addLabel` (`'Agregar'`), `optionsLabel` (`'Opciones disponibl
 
 ```astro
 ---
-import { VariantSelector } from '@tinycode/astro-cart/components';
+import { VariantSelector } from '@dennismiranda/astro-cart/components';
 ---
 <button data-cart-action="variant-open">Elegir</button>
 <VariantSelector product={combo} />
@@ -188,9 +188,9 @@ interface CartItem {
 ## 5. Programación (sin tocar el DOM)
 
 ```ts
-import { cart, getCart, createCart, formatCurrency } from '@tinycode/astro-cart';
+import { cart, getCart, createCart, formatCurrency } from '@dennismiranda/astro-cart';
 // o, si no usas los componentes Astro:
-import { initCart } from '@tinycode/astro-cart/client';
+import { initCart } from '@dennismiranda/astro-cart/client';
 ```
 
 `cart` es un **singleton por página** (compartido entre componentes y tu código). En el servidor no hace nada hasta que se usa.
@@ -300,7 +300,7 @@ Pasa las opciones por la prop `options` del `CartDrawer` (se serializa a `data-c
 Importa `styles.css` una vez y redefine **cualquier variable** en `:root` o en cualquier scope:
 
 ```css
-@import '@tinycode/astro-cart/styles.css';
+@import '@dennismiranda/astro-cart/styles.css';
 
 :root {
   /* marca */
@@ -405,7 +405,7 @@ const cart = createCart({
 
 | Síntoma | Causa / solución |
 |---|---|
-| Drawer sin estilos o visible sin abrir | Falta `import '@tinycode/astro-cart/styles.css'` |
+| Drawer sin estilos o visible sin abrir | Falta `import '@dennismiranda/astro-cart/styles.css'` |
 | Dos carritos distintos | Alguien llamó `createCart()` directamente; usa `getCart()`/`cart` (singleton) |
 | Las opciones no se aplican | La **primera** llamada a `initCart()` gana; usa la prop `options` del `CartDrawer` |
 | Personalicé `getItemId` y el carrito viejo se rompió | Cambia `storageKey` o limpia el storage (la clave cambia el esquema) |

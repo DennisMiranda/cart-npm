@@ -5,8 +5,8 @@ import {
   CartTrigger,
   ProductCard,
   CheckoutSlot,
-} from '@tinycode/astro-cart/components';
-import type { Product } from '@tinycode/astro-cart';
+} from '@dennismiranda/astro-cart/components';
+import type { Product } from '@dennismiranda/astro-cart';
 
 const productos: Product[] = [
   {
@@ -52,7 +52,7 @@ const zonas = [
 ];
 ---
 
-<Layout title="Demo · @tinycode/astro-cart">
+<Layout title="Demo · @dennismiranda/astro-cart">
   <main class="page">
     <h1>Menú demo</h1>
     <p>Agrega productos (con y sin variantes) y revisa el drawer + trigger del carrito.</p>
@@ -99,8 +99,8 @@ const zonas = [
 </Layout>
 
 <script>
-  import { cart, formatCurrency } from '@tinycode/astro-cart';
-  import { initCart } from '@tinycode/astro-cart/client';
+  import { cart, formatCurrency } from '@dennismiranda/astro-cart';
+  import { initCart } from '@dennismiranda/astro-cart/client';
 
   initCart();
 
